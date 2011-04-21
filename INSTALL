@@ -1,0 +1,18 @@
+Require
+
+- Postgresql server with installed plpython
+- Asterisk server with enabled and configured AMI
+- Pyst python module
+
+Install
+- Download source
+- Download, unpack, cd to uncompressed pyst source and install it:
+  python setup.py install
+
+- Execute install.sql: psql -U postgres asterisk -f install.sql
+- Add your server and required credentials into asterisk.managers table:
+  insert into asterisk.managers values ('192.168.1.1', 'me', 'mysecret');
+
+Upgrade
+- Download new version
+- Execute install script again
