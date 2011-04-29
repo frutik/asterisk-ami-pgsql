@@ -2,7 +2,7 @@ Require
 
 - Postgresql server with installed plpython
 - Asterisk server with enabled and configured AMI
-- Pyst python module
+- Pyst python module (https://github.com/al-the-x/pyst)
 
 Install
 - Download source
