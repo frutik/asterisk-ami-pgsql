@@ -16,3 +16,6 @@ Install
 Upgrade
 - Download new version
 - Execute install script again
+
+Usage
+See https://github.com/frutik/asterisk-ami-pgsql/wiki/Examples
