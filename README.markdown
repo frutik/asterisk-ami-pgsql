@@ -50,3 +50,12 @@
 ## Remove agent from queue
 
     select asterisk.queue_remove('localhost', 'incomming_queue', 'AGENT/007');
+    
+## Show queue status
+
+    asterisk=# select * from asterisk.queue_members('localhost', 'test_te') where "Name" = 'SIP/1113';                                                                                         
+      Queue  |   Name   | Location | Membership | Penalty | CallsTaken | LastCall | Status | Paused                                                                                                
+    ---------+----------+----------+------------+---------+------------+----------+--------+--------                                                                                               
+     test_te | SIP/1113 | SIP/1113 | dynamic    | 1       | 0          | 0        | 5      | 0                                                                                                     
+    (1 row)                                                                                                                                                                                        
+                      
