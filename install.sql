@@ -285,3 +285,12 @@ return result
 
 $$ LANGUAGE plpythonu;
 
+CREATE OR REPLACE FUNCTION asterisk.test() RETURNS boolean AS $$
+import frutik
+
+frutik.test(plpy)
+
+return True
+
+$$ LANGUAGE plpythonu;
+
