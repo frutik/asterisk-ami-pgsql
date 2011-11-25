@@ -4,16 +4,15 @@
 - Asterisk server with enabled and configured AMI
 - Pyst python module (https://github.com/al-the-x/pyst)
 
-# Install
-- Download source
-- Download, unpack, cd to uncompressed pyst source and install it:
-  python setup.py install
+# Installation
 
+- pip install -r requirements.txt
 - Execute install.sql: psql -U postgres asterisk -f install.sql
 - Add your server and required credentials into asterisk.managers table:
   insert into asterisk.managers values ('192.168.1.1', 'me', 'mysecret');
 
 # Upgrade
+
 - Download new version
 - Execute install script again
 
