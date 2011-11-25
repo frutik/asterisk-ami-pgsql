@@ -286,9 +286,9 @@ return result
 $$ LANGUAGE plpythonu;
 
 CREATE OR REPLACE FUNCTION asterisk.test() RETURNS boolean AS $$
-import frutik
+import AsteriskAmiPGSQL
 
-frutik.test(plpy)
+AsteriskAmiPGSQL.test(plpy)
 
 return True
 
