@@ -7,6 +7,7 @@ Attempt to provide access to Asterisk's AMI via Postgres/SQL
 - You can have access to the asterisk's ami from any programming languages which supports access to the postgresql.
 - You can employ all power of sql language: sorting, filtering by where clauses, grouping, join resulting output 
   of ami commands (like ordinary database tables) with the real tables.
+- You can use your Asterisk as source of data for ETL processes. For example, to collect some stats.
 
 # Require
 
