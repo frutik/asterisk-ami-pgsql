@@ -6,10 +6,18 @@
 
 # Installation
 
-- pip install -r requirements.txt
-- Execute install.sql: psql -U postgres asterisk -f install.sql
+- Download latest released version and extract files from archive.
+- Inside of extracted folder execute command:
+
+     pip install -r requirements.txt
+
+- Execute install.sql: 
+
+     psql -U postgres asterisk -f install.sql
+
 - Add your server and required credentials into asterisk.managers table:
-  insert into asterisk.managers values ('192.168.1.1', 'me', 'mysecret');
+
+     insert into asterisk.managers values ('192.168.1.1', 'me', 'mysecret');
 
 # Upgrade
 
