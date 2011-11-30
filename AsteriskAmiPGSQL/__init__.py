@@ -5,11 +5,11 @@ def _get_type_fields(plpy, type_name):
     return_type_attributes_plan = plpy.prepare("""SELECT attname FROM pg_attribute WHERE attrelid = (SELECT oid
         FROM pg_class WHERE relname = $1);""", ["text"])
 
-    return_type_attributes = plpy.execute(return_type_attributes_plan, [type_name])
+    type_attributes = plpy.execute(return_type_attributes_plan, [type_name])
 
-    result = ''
-    for r in return_type_attributes:
-        result += str(r['attname']) + ','
+    result = []
+    for r in type_attributes:
+        result.append(r['attname'])
 
     return result
 
@@ -56,7 +56,7 @@ def queue_members(plpy, ami_host, queue):
     result = []
     for event in manager.event_registry:
         record = {}
-        for sip_header in return_type_attributes[0]['get_type_fields'].split(','):
+        for sip_header in return_type_attributes:
             record[sip_header] = event.get_header(sip_header, None)
         result.append(record)
 
@@ -73,7 +73,7 @@ def queue_entries(plpy, ami_host, queue):
     result = []
     for event in manager.event_registry:
         record = {}
-        for sip_header in return_type_attributes[0]['get_type_fields'].split(','):
+        for sip_header in return_type_attributes:
             record[sip_header] = event.get_header(sip_header, None)
         result.append(record)
 
@@ -93,7 +93,7 @@ def queue_params(plpy, ami_host, queue):
     result = []
     for event in manager.event_registry:
         record = {}
-        for sip_header in return_type_attributes[0]['get_type_fields'].split(','):
+        for sip_header in return_type_attributes:
             plpy.notice(sip_header)
             record[sip_header] = event.get_header(sip_header, None)
 
@@ -112,18 +112,12 @@ def sip_peers(plpy, ami_host):
     result = []
     for event in manager.event_registry:
         record = {}
-        for sip_header in return_type_attributes[0]['get_type_fields'].split(','):
+        for sip_header in return_type_attributes:
             record[sip_header] = event.get_header(sip_header, None)
+
         result.append(record)
 
     return result
-
-def originate_async(plpy, ami_host, channel, exten, context, priority):
-    manager = _get_manager(plpy, ami_host)
-    manager.originate(channel=channel, exten=exten, context=context, priority=priority, async=True)
-    manager.logoff()
-
-    return True
 
 def sipshowpeer(plpy, ami_host, peer):
     manager = _get_manager(plpy, ami_host)
@@ -133,10 +127,17 @@ def sipshowpeer(plpy, ami_host, peer):
     return_type_attributes = _get_type_fields(plpy,'peer')
 
     result = {}
-    for sip_header in return_type_attributes[0]['get_type_fields'].split(','):
+    for sip_header in return_type_attributes:
         result[sip_header] = ami_result.get_header(sip_header, None)
 
     return result
+
+def originate_async(plpy, ami_host, channel, exten, context, priority):
+    manager = _get_manager(plpy, ami_host)
+    manager.originate(channel=channel, exten=exten, context=context, priority=priority, async=True)
+    manager.logoff()
+
+    return True
 
 def queue_add(plpy, ami_host, queue, interface):
     manager = _get_manager(plpy, ami_host)
