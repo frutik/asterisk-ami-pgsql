@@ -63,7 +63,7 @@ def queue_entries(plpy, ami_host, queue):
     manager.event_registry = []
     manager.register_event('QueueEntry', _handle_queue_entry)
 
-    manager.send_action({QUEUE : 'QueueStatus', QUEUE : queue})
+    manager.send_action({ACTION : 'QueueStatus', QUEUE : queue})
 
     manager.sippeers()
 
