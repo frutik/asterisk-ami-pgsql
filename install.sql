@@ -29,72 +29,6 @@ CREATE TYPE asterisk.peer_entry AS (
     "Event" text
 );
 
-CREATE OR REPLACE FUNCTION asterisk.sippeers(hostname text) RETURNS SETOF asterisk.peer_entry AS $$
-import asterisk.manager
-
-def handle_peerentry(event, manager):
-    manager.event_registry.append(event)
-
-plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-r = plpy.execute(plan, [hostname], 1)
-r = r[0]
-
-manager = asterisk.manager.Manager()
-manager.connect(r['host'])
-manager.login(r['login'], r['passwd'])
-manager.event_registry = []
-manager.register_event('PeerEntry', handle_peerentry)
-
-manager.sippeers()
-manager.logoff()
-
-return_type_attributes_plan = plpy.prepare("SELECT asterisk.get_type_fields($1, $2);", ["text", "text"])
-return_type_attributes = plpy.execute(return_type_attributes_plan, [hostname, 'peer_entry'], 1)
-
-result = []
-
-for event in manager.event_registry:
-    record = {}
-    for sip_header in return_type_attributes[0]['get_type_fields'].split(','):
-        record[sip_header] = event.get_header(sip_header, None)
-    result.append(record)
-
-return result
-
-$$ LANGUAGE plpythonu;
-
-CREATE OR REPLACE FUNCTION asterisk.get_type_fields(hostname text, type_name text) RETURNS text AS $$
-
-return_type_attributes_plan = plpy.prepare("SELECT attname FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = $1);", ["text"])
-return_type_attributes = plpy.execute(return_type_attributes_plan, [type_name])
-
-result = ''
-
-for r in return_type_attributes:
-    result += str(r['attname']) + ','
-
-return result
-
-$$ LANGUAGE plpythonu;
-
-CREATE OR REPLACE FUNCTION asterisk.originate_async(hostname text, channel varchar, exten varchar, context varchar, priority int4) RETURNS boolean AS $$
-import asterisk.manager
-
-plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-r = plpy.execute(plan, [hostname], 1)
-r = r[0]
-
-manager = asterisk.manager.Manager()
-manager.connect(r['host'])
-manager.login(r['login'], r['passwd'])
-
-manager.originate(channel=channel, exten=exten, context=context, priority=priority, async=True)
-manager.logoff()
-
-return True
-
-$$ LANGUAGE plpythonu;
-
 CREATE TYPE asterisk.peer AS (
     "ChanObjectType" text,
     "ObjectName" text,
@@ -154,80 +88,6 @@ CREATE TYPE asterisk.peer AS (
     "Callgroup" text
 );
 
-CREATE OR REPLACE FUNCTION asterisk.sipshowpeer(hostname text, peer varchar) RETURNS asterisk.peer AS $$
-import asterisk.manager
-
-plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-r = plpy.execute(plan, [hostname], 1)
-r = r[0]
-
-manager = asterisk.manager.Manager()
-manager.connect(r['host'])
-manager.login(r['login'], r['passwd'])
-
-ami_result = manager.sipshowpeer(peer=peer)
-manager.logoff()
-
-return_type_attributes_plan = plpy.prepare("SELECT asterisk.get_type_fields($1, $2);", ["text", "text"])
-return_type_attributes = plpy.execute(return_type_attributes_plan, [hostname, 'peer'], 1)
-
-result = {}
-
-for sip_header in return_type_attributes[0]['get_type_fields'].split(','):
-    result[sip_header] = ami_result.get_header(sip_header, None)
-
-return result
-
-$$ LANGUAGE plpythonu;
-
-CREATE OR REPLACE FUNCTION asterisk.queue_add(hostname text, queue varchar, interface varchar) RETURNS boolean AS $$
-import asterisk.manager
-
-plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-r = plpy.execute(plan, [hostname], 1)
-r = r[0]
-
-manager = asterisk.manager.Manager()
-manager.connect(r['host'])
-manager.login(r['login'], r['passwd'])
-
-cdict = {'Action':'QueueAdd'}
-cdict['Interface'] = interface
-cdict['Queue'] = queue
-cdict['Penalty'] = 1
-cdict['Paused'] = False
-
-response = manager.send_action(cdict)
-
-manager.logoff()
-
-return True
-
-$$ LANGUAGE plpythonu;
-
-CREATE OR REPLACE FUNCTION asterisk.queue_remove(hostname text, queue varchar, interface varchar) RETURNS boolean AS $$
-import asterisk.manager
-
-plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-r = plpy.execute(plan, [hostname], 1)
-r = r[0]
-
-manager = asterisk.manager.Manager()
-manager.connect(r['host'])
-manager.login(r['login'], r['passwd'])
-
-cdict = {'Action':'QueueRemove'}
-cdict['Interface'] = interface
-cdict['Queue'] = queue
-
-response = manager.send_action(cdict)
-
-manager.logoff()
-
-return True
-
-$$ LANGUAGE plpythonu;
-
 CREATE TYPE asterisk.asterisk_queue_member AS (
     "Queue" text,
     "Name" text,
@@ -249,27 +109,54 @@ CREATE TYPE asterisk.asterisk_queue_entry AS (
   "Wait" text
 );
 
+CREATE TYPE asterisk.asterisk_queue_params AS (
+  "Queue" text,
+  "Max" text,
+  "Calls" text,
+  "Holdtime" text,
+  "Completed" text,
+  "Abandoned" text,
+  "ServiceLevel" text,
+  "ServicelevelPerf" text,
+  "Weight" text
+);
+
+CREATE OR REPLACE FUNCTION asterisk.sippeers(hostname text) RETURNS SETOF asterisk.peer_entry AS $$
+  import AsteriskAmiPGSQL
+  return AsteriskAmiPGSQL.sip_peers(plpy, hostname)
+$$ LANGUAGE plpythonu;
+
+CREATE OR REPLACE FUNCTION asterisk.sipshowpeer(hostname text, peer varchar) RETURNS asterisk.peer AS $$
+  import AsteriskAmiPGSQL
+  return AsteriskAmiPGSQL.sipshowpeer(plpy, hostname, peer)
+$$ LANGUAGE plpythonu;
+
+CREATE OR REPLACE FUNCTION asterisk.originate_async(hostname text, channel varchar, exten varchar, context varchar, priority int4) RETURNS boolean AS $$
+  import AsteriskAmiPGSQL
+  return AsteriskAmiPGSQL.originate_async(plpy, hostname, channel, exten, context, priority)
+$$ LANGUAGE plpythonu;
+
+CREATE OR REPLACE FUNCTION asterisk.queue_add(hostname text, queue varchar, interface varchar) RETURNS boolean AS $$
+  import AsteriskAmiPGSQL
+  return AsteriskAmiPGSQL.queue_add(plpy, hostname, queue, interface)
+$$ LANGUAGE plpythonu;
+
+CREATE OR REPLACE FUNCTION asterisk.queue_remove(hostname text, queue varchar, interface varchar) RETURNS boolean AS $$
+  import AsteriskAmiPGSQL
+  return AsteriskAmiPGSQL.queue_remove(plpy, hostname, queue, interface)
+$$ LANGUAGE plpythonu;
+
 CREATE OR REPLACE FUNCTION asterisk.queue_members(hostname text, queue text) RETURNS SETOF asterisk.asterisk_queue_member AS $$
-import AsteriskAmiPGSQL
-
-return AsteriskAmiPGSQL.queue_members(plpy, hostname, queue)
-
+  import AsteriskAmiPGSQL
+  return AsteriskAmiPGSQL.queue_members(plpy, hostname, queue)
 $$ LANGUAGE plpythonu;
 
 CREATE OR REPLACE FUNCTION asterisk.queue_entries(hostname text, queue text) RETURNS SETOF asterisk.asterisk_queue_entry AS $$
-import AsteriskAmiPGSQL
-
-return AsteriskAmiPGSQL.queue_entries(plpy, hostname, queue)
-
+  import AsteriskAmiPGSQL
+  return AsteriskAmiPGSQL.queue_entries(plpy, hostname, queue)
 $$ LANGUAGE plpythonu;
 
-
-CREATE OR REPLACE FUNCTION asterisk.test() RETURNS boolean AS $$
-import AsteriskAmiPGSQL
-
-AsteriskAmiPGSQL.test(plpy)
-
-return True
-
+CREATE OR REPLACE FUNCTION asterisk.queue_params(hostname text, queue text) RETURNS SETOF asterisk.asterisk_queue_params AS $$
+  import AsteriskAmiPGSQL
+  return AsteriskAmiPGSQL.queue_params(plpy, hostname, queue)
 $$ LANGUAGE plpythonu;
-
