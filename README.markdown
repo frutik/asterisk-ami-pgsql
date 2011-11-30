@@ -2,6 +2,7 @@
 
 - Postgresql server with installed plpython
 - Asterisk server with enabled and configured AMI
+- Python and pip package manager
 - Pyst python module (https://github.com/al-the-x/pyst)
 
 # Installation
