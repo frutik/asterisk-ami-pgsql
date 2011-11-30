@@ -1,6 +1,7 @@
-#TODO cache plans
-#TODO cache credentials
+-- TODO cache plans
+-- TODO cache credentials
 
+DROP SCHEMA asterisk CASCADE;
 CREATE SCHEMA asterisk;
 
 create table asterisk.managers (
@@ -13,7 +14,6 @@ create unique index asterisk_managers_uk on asterisk.managers (host, login);
 
 insert into asterisk.managers values ('localhost', 'me', 'mysecret');
 
-DROP TYPE asterisk.peer_entry cascade;
 CREATE TYPE asterisk.peer_entry AS (
     "IPport" text,
     "Status" text,
@@ -95,7 +95,6 @@ return True
 
 $$ LANGUAGE plpythonu;
 
-DROP TYPE asterisk.peer cascade;
 CREATE TYPE asterisk.peer AS (
     "ChanObjectType" text,
     "ObjectName" text,
@@ -229,8 +228,6 @@ return True
 
 $$ LANGUAGE plpythonu;
 
-
-DROP TYPE asterisk.asterisk_queue_member cascade;
 CREATE TYPE asterisk.asterisk_queue_member AS (
     "Queue" text,
     "Name" text,
@@ -243,7 +240,6 @@ CREATE TYPE asterisk.asterisk_queue_member AS (
     "Paused" text
 );
 
-DROP TYPE asterisk.asterisk_queue_entry cascade;
 CREATE TYPE asterisk.asterisk_queue_entry AS (
   "Queue" text,
   "Position" text,
