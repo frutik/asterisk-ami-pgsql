@@ -22,7 +22,7 @@
 # Upgrade
 
 - Download new version
-- Execute install script again
+- Perform install procedure again
 
 # Usage
 
