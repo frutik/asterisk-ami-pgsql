@@ -96,6 +96,10 @@ Attempt to provide access to Asterisk's AMI via Postgres/SQL
      test_te | 0   | 1     | 65       | 693       | 284       | 60           | 71.6             | 0
     (1 row)
 
+## Join with the real table
+
+Comming soon...
+
 ## Limitations
 
 - This solution is not for scaling of access to AMI - you still need use some kind of ami proxy.
