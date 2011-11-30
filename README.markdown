@@ -57,4 +57,23 @@
     ---------+----------+----------+------------+---------+------------+----------+--------+--------                                                                                               
      test_te | SIP/1113 | SIP/1113 | dynamic    | 1       | 0          | 0        | 5      | 0                                                                                                     
     (1 row)                                                                                                                                                                                        
-                      
+
+## Check customers waiting in queue
+
+        test=# select * from asterisk.queue_entries('127.0.0.1', 'test_te');
+      Queue  | Position |       Channel       | CallerID | CallerIDName | Wait 
+    ---------+----------+---------------------+----------+--------------+------
+     test_te | 1        | SIP/430913-02c3aef0 | 430913   | 430913       | 69
+    (1 row)
+
+
+
+## Check general stats of queue
+
+        test=# select * from asterisk.queue_params('127.0.0.1', 'test_te');
+      Queue  | Max | Calls | Holdtime | Completed | Abandoned | ServiceLevel | ServicelevelPerf | Weight 
+    ---------+-----+-------+----------+-----------+-----------+--------------+------------------+--------
+     test_te | 0   | 1     | 65       | 693       | 284       | 60           | 71.6             | 0
+    (1 row)
+
+
