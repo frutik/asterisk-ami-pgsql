@@ -75,26 +75,23 @@ def queue_entries(plpy, ami_host, queue):
         record = {}
         for sip_header in return_type_attributes:
             record[sip_header] = event.get_header(sip_header, None)
+
         result.append(record)
 
     return result
 
 def queue_params(plpy, ami_host, queue):
     manager = _get_manager(plpy, ami_host)
-    manager.register_event('QueueEntry', _handle_queue_parameter)
+    manager.register_event('QueueParams', _handle_queue_parameter)
     manager.send_action({ACTION : 'QueueStatus', QUEUE : queue})
     manager.logoff()
 
-    return_type_attributes = _get_type_fields(plpy,'asterisk_queue_parameter')
-
-    plpy.notice(return_type_attributes)
-    plpy.notice(manager.event_registry)
+    return_type_attributes = _get_type_fields(plpy,'asterisk_queue_params')
 
     result = []
     for event in manager.event_registry:
         record = {}
         for sip_header in return_type_attributes:
-            plpy.notice(sip_header)
             record[sip_header] = event.get_header(sip_header, None)
 
         result.append(record)
@@ -142,9 +139,9 @@ def originate_async(plpy, ami_host, channel, exten, context, priority):
 def queue_add(plpy, ami_host, queue, interface):
     manager = _get_manager(plpy, ami_host)
 
-    cdict = {'Action':'QueueAdd'}
+    cdict = {ACTION:'QueueAdd'}
     cdict['Interface'] = interface
-    cdict['Queue'] = queue
+    cdict[QUEUE] = queue
     cdict['Penalty'] = 1
     cdict['Paused'] = False
 
@@ -156,9 +153,9 @@ def queue_add(plpy, ami_host, queue, interface):
 def queue_remove(plpy, ami_host, queue, interface):
     manager = _get_manager(plpy, ami_host)
 
-    cdict = {'Action':'QueueRemove'}
+    cdict = {ACTION:'QueueRemove'}
     cdict['Interface'] = interface
-    cdict['Queue'] = queue
+    cdict[QUEUE] = queue
 
     response = manager.send_action(cdict)
     manager.logoff()
