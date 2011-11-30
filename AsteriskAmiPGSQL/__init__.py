@@ -12,7 +12,7 @@ def queue_members(plpy, ami_host, queue):
     import asterisk.manager
 
     plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [hostname], 1)
+    r = plpy.execute(plan, [ami_host], 1)
     r = r[0]
 
     manager = asterisk.manager.Manager()
@@ -28,7 +28,7 @@ def queue_members(plpy, ami_host, queue):
     manager.logoff()
 
     return_type_attributes_plan = plpy.prepare("SELECT asterisk.get_type_fields($1, $2);", ["text", "text"])
-    return_type_attributes = plpy.execute(return_type_attributes_plan, [hostname, 'asterisk_queue_member'], 1)
+    return_type_attributes = plpy.execute(return_type_attributes_plan, [r['host'], 'asterisk_queue_member'], 1)
 
     result = []
 
@@ -54,7 +54,7 @@ def queue_entries(plpy, ami_host, queue):
     import asterisk.manager
 
     plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [hostname], 1)
+    r = plpy.execute(plan, [ami_host], 1)
     r = r[0]
 
     manager = asterisk.manager.Manager()
@@ -70,7 +70,7 @@ def queue_entries(plpy, ami_host, queue):
     manager.logoff()
 
     return_type_attributes_plan = plpy.prepare("SELECT asterisk.get_type_fields($1, $2);", ["text", "text"])
-    return_type_attributes = plpy.execute(return_type_attributes_plan, [hostname, 'asterisk_queue_member'], 1)
+    return_type_attributes = plpy.execute(return_type_attributes_plan, [r['host'], 'asterisk_queue_member'], 1)
 
     result = []
 
