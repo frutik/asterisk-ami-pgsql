@@ -96,4 +96,9 @@ Attempt to provide access to Asterisk's AMI via Postgres/SQL
      test_te | 0   | 1     | 65       | 693       | 284       | 60           | 71.6             | 0
     (1 row)
 
+## Limitations
+
+- This solution is not for scaling of access to AMI - you still need use some kind of ami proxy.
+- This solution "just works for me". This is not best example of python code.
+- Keep in mind - some of those commands could be slow.
 
