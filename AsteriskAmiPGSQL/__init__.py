@@ -41,21 +41,9 @@ def _handle_peerentry(event, manager):
     manager.event_registry.append(event)
 
 def queue_members(plpy, ami_host, queue):
-#    manager = _get_manager(plpy, ami_host)
-    import asterisk.manager
-
-    plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [ami_host], 1)
-    r = r[0]
-
-    manager = asterisk.manager.Manager()
-    manager.connect(r['host'])
-    manager.login(r['login'], r['passwd'])
-    manager.event_registry = []
+    manager = _get_manager(plpy, ami_host)
     manager.register_event('QueueMember', _handle_queue_member)
-
     manager.send_action({ACTION : 'QueueStatus', QUEUE : queue})
-
     manager.logoff()
 
     return_type_attributes = _get_type_fields(plpy,'asterisk_queue_member')
@@ -69,26 +57,14 @@ def queue_members(plpy, ami_host, queue):
     for event in manager.event_registry:
         record = {}
         for sip_header in return_type_attributes[0]['get_type_fields'].split(','):
-            #plpy.notice("FOUND HEADER " + sip_header)
             record[sip_header] = event.get_header(sip_header, None)
         result.append(record)
 
     return result
 
 def queue_entries(plpy, ami_host, queue):
-
-    import asterisk.manager
-
-    plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [ami_host], 1)
-    r = r[0]
-
-    manager = asterisk.manager.Manager()
-    manager.connect(r['host'])
-    manager.login(r['login'], r['passwd'])
-    manager.event_registry = []
+    manager = _get_manager(plpy, ami_host)
     manager.register_event('QueueEntry', _handle_queue_entry)
-
     manager.send_action({ACTION : 'QueueStatus', QUEUE : queue})
     manager.logoff()
 
@@ -104,19 +80,8 @@ def queue_entries(plpy, ami_host, queue):
     return result
 
 def queue_params(plpy, ami_host, queue):
-
-    import asterisk.manager
-
-    plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [ami_host], 1)
-    r = r[0]
-
-    manager = asterisk.manager.Manager()
-    manager.connect(r['host'])
-    manager.login(r['login'], r['passwd'])
-    manager.event_registry = []
+    manager = _get_manager(plpy, ami_host)
     manager.register_event('QueueEntry', _handle_queue_parameter)
-
     manager.send_action({ACTION : 'QueueStatus', QUEUE : queue})
     manager.logoff()
 
@@ -136,19 +101,9 @@ def queue_params(plpy, ami_host, queue):
 
     return result
 
-def sip_peers(plpy, hostname):
-    import asterisk.manager
-
-    plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [hostname], 1)
-    r = r[0]
-
-    manager = asterisk.manager.Manager()
-    manager.connect(r['host'])
-    manager.login(r['login'], r['passwd'])
-    manager.event_registry = []
+def sip_peers(plpy, ami_host):
+    manager = _get_manager(plpy, ami_host)
     manager.register_event('PeerEntry', _handle_peerentry)
-
     manager.sippeers()
     manager.logoff()
 
@@ -163,33 +118,15 @@ def sip_peers(plpy, hostname):
 
     return result
 
-def originate_async(plpy, hostname, channel, exten, context, priority):
-    import asterisk.manager
-
-    plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [hostname], 1)
-    r = r[0]
-
-    manager = asterisk.manager.Manager()
-    manager.connect(r['host'])
-    manager.login(r['login'], r['passwd'])
-
+def originate_async(plpy, ami_host, channel, exten, context, priority):
+    manager = _get_manager(plpy, ami_host)
     manager.originate(channel=channel, exten=exten, context=context, priority=priority, async=True)
     manager.logoff()
 
     return True
 
-def sipshowpeer(plpy, hostname, peer):
-    import asterisk.manager
-
-    plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [hostname], 1)
-    r = r[0]
-
-    manager = asterisk.manager.Manager()
-    manager.connect(r['host'])
-    manager.login(r['login'], r['passwd'])
-
+def sipshowpeer(plpy, ami_host, peer):
+    manager = _get_manager(plpy, ami_host)
     ami_result = manager.sipshowpeer(peer=peer)
     manager.logoff()
 
@@ -201,16 +138,8 @@ def sipshowpeer(plpy, hostname, peer):
 
     return result
 
-def queue_add(plpy, hostname, queue, interface):
-    import asterisk.manager
-
-    plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [hostname], 1)
-    r = r[0]
-
-    manager = asterisk.manager.Manager()
-    manager.connect(r['host'])
-    manager.login(r['login'], r['passwd'])
+def queue_add(plpy, ami_host, queue, interface):
+    manager = _get_manager(plpy, ami_host)
 
     cdict = {'Action':'QueueAdd'}
     cdict['Interface'] = interface
@@ -223,16 +152,8 @@ def queue_add(plpy, hostname, queue, interface):
 
     return True
 
-def queue_remove(plpy, hostname, queue, interface):
-    import asterisk.manager
-
-    plan = plpy.prepare("SELECT * FROM asterisk.managers WHERE host = $1", [ "text" ])
-    r = plpy.execute(plan, [hostname], 1)
-    r = r[0]
-
-    manager = asterisk.manager.Manager()
-    manager.connect(r['host'])
-    manager.login(r['login'], r['passwd'])
+def queue_remove(plpy, ami_host, queue, interface):
+    manager = _get_manager(plpy, ami_host)
 
     cdict = {'Action':'QueueRemove'}
     cdict['Interface'] = interface
