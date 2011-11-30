@@ -243,12 +243,30 @@ CREATE TYPE asterisk.asterisk_queue_member AS (
     "Paused" text
 );
 
+DROP TYPE asterisk.asterisk_queue_entry cascade;
+CREATE TYPE asterisk.asterisk_queue_entry AS (
+  "Queue" text,
+  "Position" text,
+  "Channel" text,
+  "CallerID" text,
+  "CallerIDName" text,
+  "Wait" text
+);
+
 CREATE OR REPLACE FUNCTION asterisk.queue_members(hostname text, queue text) RETURNS SETOF asterisk.asterisk_queue_member AS $$
 import AsteriskAmiPGSQL
 
 return AsteriskAmiPGSQL.queue_members(plpy, hostname, queue)
 
 $$ LANGUAGE plpythonu;
+
+CREATE OR REPLACE FUNCTION asterisk.queue_entries(hostname text, queue text) RETURNS SETOF asterisk.asterisk_queue_entry AS $$
+import AsteriskAmiPGSQL
+
+return AsteriskAmiPGSQL.queue_entries(plpy, hostname, queue)
+
+$$ LANGUAGE plpythonu;
+
 
 CREATE OR REPLACE FUNCTION asterisk.test() RETURNS boolean AS $$
 import AsteriskAmiPGSQL
