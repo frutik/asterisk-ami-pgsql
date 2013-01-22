@@ -98,7 +98,7 @@ Attempt to provide access to Asterisk's AMI via Postgres/SQL
 
 ## Join with the real table
 
-Comming soon...
+You can do this. But examples will be provided later...
 
 ## Limitations
 
