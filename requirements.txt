@@ -1,2 +1,2 @@
 -e git+git://github.com/al-the-x/pyst.git#egg=asterisk
--e git+git://github.com/frutik/asterisk-ami-pgsql.git@rc3#egg=AsteriskAmiPGSQL
+-e git+git://github.com/frutik/asterisk-ami-pgsql.git#egg=AsteriskAmiPGSQL
