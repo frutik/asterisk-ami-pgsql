@@ -31,7 +31,8 @@ On CentOS 6.3
      pip install -r requirements.txt
 
 - Execute install.sql: 
-
+     
+     createlang plpythonu -U postgres asterisk  
      psql -U postgres asterisk -f install.sql
 
 - Add your server and required credentials into asterisk.managers table:
