@@ -1,2 +1,6 @@
 -e git+git://github.com/al-the-x/pyst.git#egg=asterisk
+<<<<<<< HEAD
 -e git+git://github.com/frutik/asterisk-ami-pgsql.git@beta1#egg=AsteriskAmiPGSQL
+=======
+-e git+git://github.com/frutik/asterisk-ami-pgsql.git#egg=AsteriskAmiPGSQL
+>>>>>>> 70cb3a35ae5d32910a129d6c49ca35fec556dc4c

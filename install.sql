@@ -1,7 +1,9 @@
 -- TODO cache plans
 -- TODO cache credentials
 
-DROP SCHEMA asterisk CASCADE;
+BEGIN;
+
+DROP SCHEMA IF EXISTS asterisk CASCADE;
 CREATE SCHEMA asterisk;
 
 create table asterisk.managers (
@@ -160,3 +162,5 @@ CREATE OR REPLACE FUNCTION asterisk.queue_params(hostname text, queue text) RETU
   import AsteriskAmiPGSQL
   return AsteriskAmiPGSQL.queue_params(plpy, hostname, queue)
 $$ LANGUAGE plpythonu;
+
+COMMIT;

@@ -1,20 +1,47 @@
+## What is this
+
+Attempt to provide access to Asterisk's AMI via Postgres/SQL
+
+## Features
+
+- You can have access to the asterisk's ami from any programming languages which supports access to the postgresql.
+- You can employ all power of sql language: sorting, filtering by where clauses, grouping, join resulting output 
+  of ami commands (like ordinary database tables) with the real tables.
+- You can use your Asterisk as source of data for ETL processes. For example, to collect some stats.
+
 # Require
 
 - Postgresql server with installed plpython
 - Asterisk server with enabled and configured AMI
+- Python and pip package manager
 - Pyst python module (https://github.com/al-the-x/pyst)
+
+On CentOS 6.3
+
+- install repo from http://yum.postgresql.org/repopackages.php
+- refresh metainfo: yum update
+- yum install postgresql92-server postgresql92-plpython
+
 
 # Installation
 
-- pip install -r requirements.txt
-- Execute install.sql: psql -U postgres asterisk -f install.sql
+- Download latest released version and extract files from archive.
+- Inside of extracted folder execute command:
+
+     pip install -r requirements.txt
+
+- Execute install.sql: 
+
+     psql -U postgres asterisk -f install.sql
+
 - Add your server and required credentials into asterisk.managers table:
-  insert into asterisk.managers values ('192.168.1.1', 'me', 'mysecret');
+
+     insert into asterisk.managers values ('192.168.1.1', 'me', 'mysecret');
 
 # Upgrade
 
 - Download new version
-- Execute install script again
+- Perform install procedure again
 
 # Usage
 
@@ -57,4 +84,32 @@
     ---------+----------+----------+------------+---------+------------+----------+--------+--------                                                                                               
      test_te | SIP/1113 | SIP/1113 | dynamic    | 1       | 0          | 0        | 5      | 0                                                                                                     
     (1 row)                                                                                                                                                                                        
-                      
+
+## Check customers waiting in queue
+
+        test=# select * from asterisk.queue_entries('127.0.0.1', 'test_te');
+      Queue  | Position |       Channel       | CallerID | CallerIDName | Wait 
+    ---------+----------+---------------------+----------+--------------+------
+     test_te | 1        | SIP/430913-02c3aef0 | 430913   | 430913       | 69
+    (1 row)
+
+
+
+## Check general stats of queue
+
+        test=# select * from asterisk.queue_params('127.0.0.1', 'test_te');
+      Queue  | Max | Calls | Holdtime | Completed | Abandoned | ServiceLevel | ServicelevelPerf | Weight 
+    ---------+-----+-------+----------+-----------+-----------+--------------+------------------+--------
+     test_te | 0   | 1     | 65       | 693       | 284       | 60           | 71.6             | 0
+    (1 row)
+
+## Join with the real table
+
+You can do this. But examples will be provided later...
+
+## Limitations
+
+- This solution is not for scaling of access to AMI - you still need use some kind of ami proxy.
+- This solution "just works for me". This is not best example of python code.
+- Keep in mind - some of those commands could be slow.
+
