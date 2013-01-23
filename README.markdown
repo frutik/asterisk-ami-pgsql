@@ -16,6 +16,13 @@ Attempt to provide access to Asterisk's AMI via Postgres/SQL
 - Python and pip package manager
 - Pyst python module (https://github.com/al-the-x/pyst)
 
+On CentOS 6.3
+
+- install repo from http://yum.postgresql.org/repopackages.php
+- refresh metainfo: yum update
+- yum install postgresql92-server postgresql92-plpython
+
+
 # Installation
 
 - Download latest released version and extract files from archive.
