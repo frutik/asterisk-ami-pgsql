@@ -28,7 +28,7 @@ On CentOS 6.3
 - Download latest released version and extract files from archive.
 - Inside of extracted folder execute command:
 
-     pip install -r requirements.txt
+     sudo pip install https://github.com/frutik/asterisk-ami-pgsql/tarball/master
 
 - Execute install.sql: 
      
