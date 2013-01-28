@@ -27,8 +27,7 @@ On CentOS 6.3
 
 - Install dependencies:
 
-     sudo pip install https://github.com/frutik/asterisk-ami-pgsql/tarball/master
-
+     sudo pip install https://github.com/al-the-x/pyst/tarball/master
 
 - Install python module:
 
@@ -37,7 +36,7 @@ On CentOS 6.3
 - Install sql part: 
      
      createlang plpythonu -U postgres asterisk  
-     psql -U postgres asterisk -f install.sql
+     psql -U postgres asterisk -f [TODO : add path to this file]install.sql
 
 - Add your server and required credentials into asterisk.managers table:
 
