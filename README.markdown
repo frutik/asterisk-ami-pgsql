@@ -25,12 +25,16 @@ On CentOS 6.3
 
 # Installation
 
-- Download latest released version and extract files from archive.
-- Inside of extracted folder execute command:
+- Install dependencies:
 
      sudo pip install https://github.com/frutik/asterisk-ami-pgsql/tarball/master
 
-- Execute install.sql: 
+
+- Install python module:
+
+     sudo pip install https://github.com/frutik/asterisk-ami-pgsql/tarball/master
+
+- Install sql part: 
      
      createlang plpythonu -U postgres asterisk  
      psql -U postgres asterisk -f install.sql
