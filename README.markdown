@@ -122,3 +122,7 @@ You can do this. But examples will be provided later...
 - This solution "just works for me". This is not best example of python code.
 - Keep in mind - some of those commands could be slow.
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/frutik/asterisk-ami-pgsql/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
